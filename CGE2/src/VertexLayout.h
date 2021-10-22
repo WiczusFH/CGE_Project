@@ -5,7 +5,8 @@
 
 struct VertexBufferElement {
 	unsigned int type;
-	unsigned int vertex_count;
+	unsigned int attrib_count;
+	unsigned int post_count;
 	bool normalized;
 
 	static unsigned int GetSizeOfType(unsigned int type) {
@@ -28,17 +29,17 @@ public:
 	VertexBufferLayout()
 		: m_Stride(0) {};
 	template<typename T>
-	void Push(unsigned int count) {
+	void Push(unsigned int attrib_count, unsigned int position_count) {
 		static_assert(false);
 	}
 	template<>
-	void Push<float>(unsigned int count) {
-		m_Elements.push_back({ GL_FLOAT, count, false });
+	void Push<float>(unsigned int attrib_count, unsigned int position_count) {
+		m_Elements.push_back({ GL_FLOAT, attrib_count, position_count, false });
 		m_Stride += VertexBufferElement::GetSizeOfType(GL_FLOAT);
 	}
 	template<>
-	void Push<unsigned int>(unsigned int count) {
-		m_Elements.push_back({ GL_UNSIGNED_INT, count, false });
+	void Push<unsigned int>(unsigned int attrib_count, unsigned int position_count) {
+		m_Elements.push_back({ GL_UNSIGNED_INT, attrib_count, position_count, false });
 		m_Stride += VertexBufferElement::GetSizeOfType(GL_UNSIGNED_INT);
 	}
 	inline const std::vector<VertexBufferElement> GetElements() { return m_Elements; }
