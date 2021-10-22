@@ -8,6 +8,12 @@
 #include <fstream>
 #include <streambuf>
 
+#include "src/renderer.h"
+#include "src/VertexBuffer.h"
+#include "src/IndexBuffer.h"
+#include "src/VertexArray.h"
+#pragma region Shader
+
 
 static unsigned int CompileShader(GLenum type, const std::string& source){
     unsigned int id = glCreateShader(type);
@@ -40,6 +46,7 @@ static unsigned int CreateShader(const std::string & vertexShader, const std::st
     glLinkProgram(program);
     return program;
 }
+#pragma endregion
 
 std::string XreadFile(const char* filepath) {
     std::ifstream t(filepath);
@@ -50,10 +57,17 @@ std::string XreadFile(const char* filepath) {
 
 int main(void)
 {
+#pragma region window and glfw
+
+
     GLFWwindow* window;
     /* Initialize the library */
     if (!glfwInit())
         return -1;
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
@@ -72,41 +86,68 @@ int main(void)
         std::cout << "Error! " << std::endl;
     }
     std::cout << glGetString(GL_VERSION) << std::endl; // -R
+#pragma endregion
+
+#pragma region Vertex Data Initialisation
+
 
     float Vertices[] = {
-        -0.5f,-0.5f,    //0
-        0.5f, -0.5f,   //1
-        0.5f, 0.5f,    //2
-        -0.5f, 0.5f     //3
+        -0.3,-0.3, 
+        0.3, -0.3, 
+        0.3, 0.3,    
+        -0.3, 0.3
+    };
+
+    float Vertices2[] = {
+        0.5, 0.5,
+        1.0, 0.5,   
+        1.0, 1.0,  
+        0.5, 1.0   
     };
 
     unsigned int indices[] = {
         0, 1, 2,
         2, 3, 0
     };
+#pragma endregion
 
-    unsigned int buffer;
-    unsigned int ibo;
+#pragma region Pointers for Rendering 
     unsigned int shader = CreateShader(XreadFile("shaders/vertex.shader"), XreadFile("shaders/fragment.shader")); //-R shaderlocations
+    unsigned int vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    
+    VertexArray vertexArray;
+    
+    VertexBuffer vertexBuffer(Vertices, sizeof(Vertices));
 
+    VertexBufferLayout vertexBufferLayout;
+    vertexBufferLayout.Push<float>(2);
+    vertexArray.AddBuffer(vertexBuffer, vertexBufferLayout);
 
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), Vertices, GL_STATIC_DRAW);
+    IndexBuffer indexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-    glEnableVertexAttribArray(0);
-
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     
 
     glUseProgram(shader);
-    
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+#pragma endregion
+
+#pragma region Data Manipulation
+
+
     float r = 0.0;
     float increment = 0.05f;
     int location = glGetUniformLocation(shader, "u_Color");
+#pragma endregion
+
+#pragma region Main Loop
+
+
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -118,14 +159,28 @@ int main(void)
             increment = 0.05;
         }
         r += increment;
+        Vertices[0] += increment/2;
+
         glUniform4f(location, r, 0.5, 0.1, 1.0);
-        
+        vertexBuffer.updateVertexBuffer(Vertices, sizeof(Vertices));
+        vertexArray.Bind();
+        vertexBuffer.Bind();
+        indexBuffer.Bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+        glUniform4f(location, 1.0, 1.0, r, 1.0);
+        vertexBuffer.updateVertexBuffer(Vertices2, sizeof(Vertices2));
+        vertexArray.Bind();
+        vertexBuffer.Bind();
+        indexBuffer.Bind();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
 
         glfwSwapBuffers(window);
 
         glfwPollEvents();
     }
+#pragma endregion
 
     glfwTerminate();
     return 0;
