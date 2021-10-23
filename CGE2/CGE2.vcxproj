@@ -152,8 +152,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Libs\stb_image.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\textures.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
     <ClCompile Include="src\VertexLayout.cpp" />
@@ -163,8 +166,11 @@
     <None Include="shaders\vertex.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Libs\stb_image.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\shader.h" />
+    <ClInclude Include="src\Textures.h" />
     <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexLayout.h" />

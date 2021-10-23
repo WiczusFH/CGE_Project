@@ -7,55 +7,38 @@
 #include <glut.h>
 #include <fstream>
 #include <streambuf>
+#include "Libs/stb_image.h"
 
 #include "src/renderer.h"
 #include "src/VertexBuffer.h"
 #include "src/IndexBuffer.h"
 #include "src/VertexArray.h"
-#pragma region Shader
-
-
-static unsigned int CompileShader(GLenum type, const std::string& source){
-    unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
-    glShaderSource(id, 1, &src, NULL);
-    glCompileShader(id);
-     int result;
-    int lenght;
-
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (!result) {
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &lenght);
-        char* message = (char*) alloca(lenght * sizeof(char));
-        glGetShaderInfoLog(id, lenght, &lenght, message);
-        std::cout<< message << std::endl;
-        glDeleteShader(id);
-        return 0;
-    }
-    return id;
-}
-
-static unsigned int CreateShader(const std::string & vertexShader, const std::string& fragmentShader) {
-    unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-    glAttachShader(program, vs);
-    glDeleteShader(vs); // -R with Detatch
-    glAttachShader(program, fs);
-    glDeleteShader(fs); // -R with Detatch
-    glLinkProgram(program);
-    return program;
-}
+#include "src/shader.h"
+#include "src/renderer.h"
+#include "src/Textures.h"
+#pragma region Globals
+const char* VERTEX_SHADER_LOCATION = "shaders/vertex.shader";
+const char* FRAGMENT_SHADER_LOCATION = "shaders/fragment.shader";
+const char* SHIP_PATH = "textures/spaceship.png";
 #pragma endregion
 
-std::string XreadFile(const char* filepath) {
-    std::ifstream t(filepath);
-    std::string str((std::istreambuf_iterator<char>(t)),
-        std::istreambuf_iterator<char>());
-    return str;
-}
 
-int main(void)
+#pragma region Keyboard
+void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == 1) {
+        exit(0);
+    }
+    if (key == GLFW_KEY_E) {
+        std::cout << key <<" " << scancode << " " << action << " " << mods << " "<< std::endl;
+    }
+    if (key == 'w') {
+    }
+};
+
+#pragma endregion
+//-R Abstract this
+
+int main(int argc, char* argv[])
 {
 #pragma region window and glfw
 
@@ -81,68 +64,66 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
     glfwSwapInterval(10);
+    //glutInit(&argc, argv);
+    glfwSetKeyCallback(window, keyboard);
 
     if (glewInit() != GLEW_OK) {
         std::cout << "Error! " << std::endl;
     }
     std::cout << glGetString(GL_VERSION) << std::endl; // -R
+
+    //glutKeyboardFunc(keyboard);
+
 #pragma endregion
 
 #pragma region Vertex Data Initialisation
 
 
     float Vertices[] = {
-        -0.3,-0.3, 
-        0.3, -0.3, 
-        0.3, 0.3,    
-        -0.3, 0.3
+        -0.3,-0.3, 0.0, 0.0,
+        0.3, -0.3, 1.0, 0.0,
+        0.3, 0.3,  1.0, 1.0,
+        -0.3, 0.3, 0.0, 1.0
     };
 
     float Vertices2[] = {
-        0.5, 0.5,
-        1.0, 0.5,   
-        1.0, 1.0,  
-        0.5, 1.0   
+        0.5, 0.5, 0.0, 0.0,
+        1.0, 0.5, 1.0, 0.0,
+        1.0, 1.0, 1.0, 1.0,
+        0.5, 1.0, 0.0, 1.0
     };
 
     unsigned int indices[] = {
         0, 1, 2,
         2, 3, 0
     };
+
+    float TextureCoordinate[] = {
+        0.1
+    };
 #pragma endregion
 
 #pragma region Pointers for Rendering 
-    unsigned int shader = CreateShader(XreadFile("shaders/vertex.shader"), XreadFile("shaders/fragment.shader")); //-R shaderlocations
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    
+    Shader shader(VERTEX_SHADER_LOCATION, FRAGMENT_SHADER_LOCATION);
     VertexArray vertexArray;
-    
     VertexBuffer vertexBuffer(Vertices, sizeof(Vertices));
-
     VertexBufferLayout vertexBufferLayout;
-    vertexBufferLayout.Push<float>(2);
-    vertexArray.AddBuffer(vertexBuffer, vertexBufferLayout);
-
     IndexBuffer indexBuffer(indices, sizeof(indices) / sizeof(unsigned int));
+    Renderer renderer;
+    shader.Bind();
 
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
+    Texture texture(SHIP_PATH);
+    //texture.Bind();
 
-    glUseProgram(shader);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    vertexBufferLayout.Push<float>(2,2);
+    vertexBufferLayout.Push<float>(2,2);
+    vertexArray.AddBuffer(vertexBuffer, vertexBufferLayout);
 
 #pragma endregion
 
 #pragma region Data Manipulation
-
-
     float r = 0.0;
     float increment = 0.05f;
-    int location = glGetUniformLocation(shader, "u_Color");
 #pragma endregion
 
 #pragma region Main Loop
@@ -159,23 +140,15 @@ int main(void)
             increment = 0.05;
         }
         r += increment;
-        Vertices[0] += increment/2;
+        //Vertices[0] += increment/2;
 
-        glUniform4f(location, r, 0.5, 0.1, 1.0);
+
+        texture.Bind();
+        
+        shader.SetUniform1i("u_Texture", 0);
         vertexBuffer.updateVertexBuffer(Vertices, sizeof(Vertices));
-        vertexArray.Bind();
-        vertexBuffer.Bind();
-        indexBuffer.Bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-        glUniform4f(location, 1.0, 1.0, r, 1.0);
-        vertexBuffer.updateVertexBuffer(Vertices2, sizeof(Vertices2));
-        vertexArray.Bind();
-        vertexBuffer.Bind();
-        indexBuffer.Bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-
+        renderer.Draw(vertexArray, indexBuffer, shader);
+        
         glfwSwapBuffers(window);
 
         glfwPollEvents();

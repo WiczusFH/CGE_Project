@@ -4,6 +4,7 @@
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "shader.h"
+
 class Renderer {
 private:
 
