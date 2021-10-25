@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <GLFW/glfw3.h>
 
 struct ShaderProgramSource
 {
@@ -10,7 +11,7 @@ struct ShaderProgramSource
 class Shader
 {
 private:
-    unsigned int m_RendererID;
+    unsigned int id;
     std::unordered_map<std::string, int> m_UniformLocationCache;
 
 public:
@@ -24,7 +25,7 @@ public:
     void SetUniform1i(const std::string& name, int value);
     void SetUniform1f(const std::string& name, float value);
     void SetUniform4f(const std::string& name, float f0, float f1, float f2, float f3);
-
+    void SetUniformMat4f(const std::string& name, float value[]);
 private:
     int GetUniformLocation(const std::string& name);
 

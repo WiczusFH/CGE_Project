@@ -6,12 +6,12 @@
 
 VertexArray::VertexArray()
 {
-	glGenVertexArrays(1, &m_RendererId);
+	glGenVertexArrays(1, &id);
 }
 
 VertexArray::~VertexArray()
 {
-	glDeleteVertexArrays(1, &m_RendererId);
+	glDeleteVertexArrays(1, &id);
 
 }
 
@@ -20,18 +20,18 @@ void VertexArray::AddBuffer(VertexBuffer& vertexBuffer, VertexBufferLayout& layo
 	Bind();
 	vertexBuffer.Bind();
 	unsigned int offset = 0;
-	const auto& elements = layout.GetElements();
+	auto& elements = layout.GetElements();
 	for (int i = 0; i < elements.size();i++) {
-		const auto& element = elements[i];
+		auto& element = elements[i];
 		glEnableVertexAttribArray(i);
 		glVertexAttribPointer(i, element.post_count, element.type, element.normalized, layout.GetStride() * element.attrib_count, (const void*) offset);
-		offset += element.attrib_count*VertexBufferElement::GetSizeOfType(element.type);
+		offset += element.attrib_count*sizeof(element.type);
 	}
 }
 
 void VertexArray::Bind()
 {
-	glBindVertexArray(m_RendererId);
+	glBindVertexArray(id);
 }
 
 void VertexArray::Unbind()

@@ -8,19 +8,19 @@
 
 Shader::Shader(const char* vertex_shader_path, const char* fragment_shader_path)
 {
-    m_RendererID = CreateShader(vertex_shader_path, fragment_shader_path);
+    id = CreateShader(vertex_shader_path, fragment_shader_path);
 
-    glUseProgram(m_RendererID);
+    glUseProgram(id);
 }
 
 Shader::~Shader()
 {
-    glDeleteProgram(m_RendererID);
+    glDeleteProgram(id);
 }
 
 void Shader::Bind() const
 {
-    glUseProgram(m_RendererID);
+    glUseProgram(id);
 }
 
 void Shader::Unbind() const
@@ -33,7 +33,7 @@ int Shader::GetUniformLocation(const std::string& name)
     if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
         return m_UniformLocationCache[name];
 
-    int location = glGetUniformLocation(m_RendererID, name.c_str());
+    int location = glGetUniformLocation(id, name.c_str());
     if (location == -1)
         std::cout << "No active uniform variable with name " << name << " found" << std::endl;
 
@@ -57,10 +57,15 @@ void Shader::SetUniform4f(const std::string& name, float f0, float f1, float f2,
     glUniform4f(GetUniformLocation(name), f0, f1, f2, f3);
 }
 
-enum ShaderType
+void Shader::SetUniformMat4f(const std::string& name, float value[])
 {
-    NONE = -1, VERTEX = 0, FRAGMENT = 1
-};
+    glUniformMatrix4fv(GetUniformLocation(name), 1, GL_TRUE, &value[0]);
+}
+
+//enum ShaderType
+//{
+//    NONE = -1, VERTEX = 0, FRAGMENT = 1
+//};
 
 std::string XreadFile(const char* filepath) {
     std::ifstream t(filepath);
