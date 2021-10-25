@@ -60,4 +60,8 @@ void Asteroid::sendToRenderer()
 	renderer.Draw(*vertexArray, *indexBuffer, shader);
 	vertexBuffer->Unbind();
 	texture->Unbind();
+
+	shader.SetUniformMat4f("u_ROT", identityMatrix);
+	shader.SetUniformMat4f("u_CEN", identityMatrix);
+	shader.SetUniformMat4f("u_CENI", identityMatrix);
 }

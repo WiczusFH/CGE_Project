@@ -1,11 +1,13 @@
 #include "ship.h"
 #include <iostream>
-
+#include <list>
+#include <thread>
+#include <chrono>
 const char* SHIP_PATH = "textures/spaceship.png";
 
 
-Ship::Ship(Shader& shader, Renderer& renderer, VertexBufferLayout& vertexBufferLayout, unsigned int objIndex)
-	:shader(shader), renderer(renderer), vertexBufferLayout(vertexBufferLayout), objIndex(objIndex)
+Ship::Ship(Shader& shader, Renderer& renderer, VertexBufferLayout& vertexBufferLayout, std::list<Laser>& laserList, unsigned int objIndex)
+	:shader(shader), renderer(renderer), vertexBufferLayout(vertexBufferLayout), objIndex(objIndex), laserList(laserList)
 {
 	collisionBox.Y.size = 0.15f;
 	collisionBox.X.size = 0.2f;
@@ -62,6 +64,16 @@ void Ship::movement(float cameraPosX) {
 	}
 	if (cameraPosX >= collisionBox.X.position) {
 		collisionBox.X.position = cameraPosX;
+	}
+}
+void Ship::loadNextShot() {
+	std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+	readyToShoot = true;
+}
+void Ship::shoot() {
+	if (readyToShoot) {
+		laserList.push_back(Laser(shader, renderer, vertexBufferLayout, collisionBox.X.position + 0.15f, collisionBox.Y.position, 3));
+		readyToShoot = false;
 	}
 }
 

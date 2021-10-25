@@ -1,10 +1,11 @@
+
 #include "AsteroidStrip.h"
 
 const char* ASTEROID_PATH = "textures/asteroids.png";
 
 AsteroidStrip::AsteroidStrip(Shader& shader, Renderer& renderer, VertexBufferLayout& vertexBufferLayout, float posY,
-	float sizeY, float sizeX, float offset, unsigned int objIndex)
-	:shader(shader), renderer(renderer), vertexBufferLayout(vertexBufferLayout), objIndex(objIndex)
+	float sizeY, float sizeX, float offset)
+	:shader(shader), renderer(renderer), vertexBufferLayout(vertexBufferLayout)
 {
 	collisionBox.Y.size = sizeY;
 	collisionBox.X.size = sizeX;
@@ -23,7 +24,7 @@ AsteroidStrip::AsteroidStrip(Shader& shader, Renderer& renderer, VertexBufferLay
 	vertexArray = new VertexArray();
 	vertexBuffer = new VertexBuffer(VertexData, sizeof(VertexData));
 	indexBuffer = new IndexBuffer(Indices, sizeof(Indices) / sizeof(unsigned int));
-	texture = new Texture(ASTEROID_PATH,1);
+	texture = new Texture(ASTEROID_PATH, 1);
 	vertexArray->AddBuffer(*vertexBuffer, vertexBufferLayout);
 	vertexBuffer->updateVertexBuffer(VertexData, sizeof(VertexData)); //-M
 	texture->Bind();

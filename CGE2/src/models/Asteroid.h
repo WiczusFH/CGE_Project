@@ -5,8 +5,15 @@
 #include <iostream>
 #include "../Physics.h"
 
+
 class Asteroid {
 private:
+	float identityMatrix[16] = {
+	1.0, 0.0, 0.0, 0.0,
+	0.0, 1.0, 0.0, 0.0,
+	0.0, 0.0, 0.0, 0.0,
+	0.0, 0.0, 0.0, 1.0
+	};
 	float rotation=0;
 	float rotationSpeed = 0;
 	float VertexData[16] = {

@@ -4,15 +4,14 @@
 #include "../Shader.h"
 #include <iostream>
 #include "../Physics.h"
-class AsteroidStrip {
+class WinScreen {
 private:
 	float speed = 0.08f;
-	float x = 100.0;
 	float VertexData[16] = {
-		0.0, 0.0, x, 1,
+		0.0, 0.0, 1, 1,
 		0.0, 0.0, 0.0, 1,
 		0.0, 0.0, 0.0, 0.0,
-		0.0, 0.0, x, 0.0
+		0.0, 0.0, 1, 0.0
 	};
 	unsigned int Indices[6] = {
 		0, 1, 2,
@@ -34,6 +33,8 @@ public:
 	unsigned int objIndex;
 	CollisionBox getCollisionBox() { return collisionBox; }
 
-	AsteroidStrip(Shader& shader, Renderer& renderer, VertexBufferLayout& vertexBufferLayout, float posY, float sizeY,float sizeX, float offset);
+	WinScreen(Shader& shader, Renderer& renderer, VertexBufferLayout& vertexBufferLayout, float size);
+	void updateVertexData();
+	void updateX(float x);
 	void sendToRenderer();
 };
