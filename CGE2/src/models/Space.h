@@ -4,6 +4,7 @@
 #include "../Shader.h"
 #include <iostream>
 #include "../Physics.h"
+
 class Space {
 private:
 	float x = 50.0;

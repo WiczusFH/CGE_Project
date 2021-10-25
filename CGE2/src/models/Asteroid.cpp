@@ -49,16 +49,15 @@ void Asteroid::sendToRenderer()
 	rotationMatrix[4] = sin(rotation);
 	rotationMatrix[5] = cos(rotation);
 
+	//shader.Bind();
 	shader.SetUniformMat4f("u_ROT", rotationMatrix);
 	shader.SetUniformMat4f("u_CEN", centrumMatrix);
 	shader.SetUniformMat4f("u_CENI", centrumMatrixInverse);
 
 	texture->Bind();
 	vertexBuffer->Bind();
-	//shader.Bind();
 	vertexBuffer->updateVertexBuffer(VertexData, sizeof(VertexData));
 	renderer.Draw(*vertexArray, *indexBuffer, shader);
-	//shader.Unbind();
 	vertexBuffer->Unbind();
 	texture->Unbind();
 }

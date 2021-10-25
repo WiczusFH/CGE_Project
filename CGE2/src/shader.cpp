@@ -62,10 +62,7 @@ void Shader::SetUniformMat4f(const std::string& name, float value[])
     glUniformMatrix4fv(GetUniformLocation(name), 1, GL_TRUE, &value[0]);
 }
 
-//enum ShaderType
-//{
-//    NONE = -1, VERTEX = 0, FRAGMENT = 1
-//};
+
 
 std::string XreadFile(const char* filepath) {
     std::ifstream t(filepath);

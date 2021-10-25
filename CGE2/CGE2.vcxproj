@@ -158,7 +158,6 @@
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\models\Asteroid.cpp" />
     <ClCompile Include="src\models\AsteroidStrip.cpp" />
-    <ClCompile Include="src\models\plainRectangle.cpp" />
     <ClCompile Include="src\models\ship.cpp" />
     <ClCompile Include="src\models\Space.cpp" />
     <ClCompile Include="src\Physics.cpp" />
@@ -179,7 +178,6 @@
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\models\Asteroid.h" />
     <ClInclude Include="src\models\AsteroidStrip.h" />
-    <ClInclude Include="src\models\plainRectangle.h" />
     <ClInclude Include="src\models\ship.h" />
     <ClInclude Include="src\models\Space.h" />
     <ClInclude Include="src\Physics.h" />

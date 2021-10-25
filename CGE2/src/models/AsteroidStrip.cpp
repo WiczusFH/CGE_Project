@@ -35,10 +35,8 @@ void AsteroidStrip::sendToRenderer()
 {
 	texture->Bind();
 	vertexBuffer->Bind();
-	//shader.Bind();
 	vertexBuffer->updateVertexBuffer(VertexData, sizeof(VertexData));
 	renderer.Draw(*vertexArray, *indexBuffer, shader);
-	//shader.Unbind();
 	vertexBuffer->Unbind();
 	texture->Unbind();
 }

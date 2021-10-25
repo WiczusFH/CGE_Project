@@ -17,7 +17,6 @@
 #include "src/renderer.h"
 #include "src/Textures.h"
 #include "src/models//ship.h"
-#include "src/models/plainRectangle.h"
 #include "src/Physics.h"
 #include "src/models/AsteroidStrip.h"
 #include "src/models/Space.h"
@@ -120,18 +119,17 @@ int main(int argc, char* argv[])
     VertexBufferLayout vertexBufferLayout;
     Renderer renderer;
     Camera camera(window_height / window_width);
-    //
     shader.Bind();
     camera.addShader(shader);
     camera.setProjection();
     vertexBufferLayout.Push<float>(2,2); //S
     vertexBufferLayout.Push<float>(2,2); //S
     //Blending
+
     glEnable(GL_BLEND);
     glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_ONE_MINUS_CONSTANT_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //RotationMatrix
     float identityMatrix[16] = {
     1,0,0,0,
     0,1,0,0,
@@ -139,11 +137,10 @@ int main(int argc, char* argv[])
     0,0,0,1
     };
     shader.SetUniformMat4f("u_ROT", identityMatrix);
-    //CenterMatrix
     shader.SetUniformMat4f("u_CEN", identityMatrix);
-
 #pragma region Main Loop
 #pragma region Object Initalisation
+
     Space space(shader, renderer, vertexBufferLayout, 50);
     ship = new Ship(shader, renderer, vertexBufferLayout, 1);
     stripUp = new AsteroidStrip(shader, renderer, vertexBufferLayout,0.9,0.1,50, 0,3);
@@ -161,7 +158,6 @@ int main(int argc, char* argv[])
     asteroidList.push_back(Asteroid(shader, renderer,vertexBufferLayout, 5.4,-0.4,0.25,0,1));
     asteroidList.push_back(Asteroid(shader, renderer,vertexBufferLayout, 5.8,0.0,0.25,0,2));
     asteroidList.push_back(Asteroid(shader, renderer,vertexBufferLayout, 6.0,0.4,0.15,1,2));
-    //asteroidList.push_back(Asteroid(shader, renderer,vertexBufferLayout, 6.2,0.7,0.15,0,1));
 
     double lasttime = glfwGetTime();
 #pragma endregion
@@ -173,11 +169,11 @@ int main(int argc, char* argv[])
 
         //scroll the screen
         if (aliveObject[1]) { camera.scrollX(SCROLL_SPEED); }
+        shader.Bind();
         camera.setView();
 
-
         //UpdateShipPosition
-        //if (aliveObject[1]) { ship->movement(camera.getX()*window_width/window_height-1); }
+
         if (aliveObject[1]) { ship->movement(camera.getX()-1); }
 
         //IsHittingStrip
@@ -186,6 +182,7 @@ int main(int argc, char* argv[])
                 CheckCollision(ship->getCollisionBox(), stripDown->getCollisionBox())) 
             {aliveObject[1] = false; delete ship;}
         }
+
         //IsHitting Asteroids
         if (aliveObject[1]) {
             for (std::list<Asteroid>::iterator asteroid_iterator = asteroidList.begin(); asteroid_iterator != asteroidList.end(); ++asteroid_iterator) {
@@ -203,15 +200,15 @@ int main(int argc, char* argv[])
         //render
         glClear(GL_COLOR_BUFFER_BIT);
         //Backgrounds
+
         space.sendToRenderer();
 
         //Conditional Rendering
         if (aliveObject[1]) { ship->sendToRenderer(); } 
-
+        
         for (std::list<Asteroid>::iterator asteroid_iterator = asteroidList.begin(); asteroid_iterator != asteroidList.end(); ++asteroid_iterator) {
             asteroid_iterator->updateAsteroid();
             asteroid_iterator->sendToRenderer();
-
         }
         //Reset rotation after asteroids
         shader.SetUniformMat4f("u_ROT", identityMatrix);
@@ -223,7 +220,6 @@ int main(int argc, char* argv[])
         stripDown->sendToRenderer();
 
         glfwSwapBuffers(window);
-
         glfwPollEvents();
     }
 #pragma endregion
