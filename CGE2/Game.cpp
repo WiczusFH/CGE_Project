@@ -8,6 +8,9 @@
 #include <fstream>
 #include <streambuf>
 #include "Libs/stb_image.h"
+#include <list>
+#include <iterator>
+#include <thread>
 
 #include "src/renderer.h"
 #include "src/VertexBuffer.h"
@@ -24,9 +27,7 @@
 #include "src/Camera.h"
 #include "src/models/Laser.h"
 #include "src/models/Win.h"
-#include <list>
-#include <iterator>
-#include <thread>
+
 #pragma region Globals
 const char* VERTEX_SHADER_LOCATION = "shaders/vertex.shader";
 const char* FRAGMENT_SHADER_LOCATION = "shaders/fragment.shader";
@@ -96,12 +97,6 @@ void keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
             }
         }
     }
-    if (key == GLFW_KEY_R) {
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-        std::cout << width << std::endl;
-        std::cout << height << std::endl;
-    }
 };
 
 int objToObjIndex(std::string name) {
@@ -130,8 +125,8 @@ int main(int argc, char* argv[])
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(window_width, window_height, "Game", glfwGetPrimaryMonitor(), NULL);
-    //window = glfwCreateWindow(600, 300, "Game", NULL, NULL);
+    //window = glfwCreateWindow(window_width, window_height, "Game", glfwGetPrimaryMonitor(), NULL);
+    window = glfwCreateWindow(1200, 700, "Game", NULL, NULL);
     
     if (!window)
     {
