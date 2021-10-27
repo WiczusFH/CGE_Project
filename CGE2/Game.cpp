@@ -125,8 +125,8 @@ int main(int argc, char* argv[])
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    //window = glfwCreateWindow(window_width, window_height, "Game", glfwGetPrimaryMonitor(), NULL);
-    window = glfwCreateWindow(1200, 700, "Game", NULL, NULL);
+    window = glfwCreateWindow(window_width, window_height, "Game", glfwGetPrimaryMonitor(), NULL);
+    //window = glfwCreateWindow(1200, 700, "Game", NULL, NULL);
     
     if (!window)
     {

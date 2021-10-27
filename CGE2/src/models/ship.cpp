@@ -9,7 +9,7 @@ const char* SHIP_PATH = "textures/spaceship.png";
 Ship::Ship(Shader& shader, Renderer& renderer, VertexBufferLayout& vertexBufferLayout, std::list<Laser>& laserList, unsigned int objIndex)
 	:shader(shader), renderer(renderer), vertexBufferLayout(vertexBufferLayout), objIndex(objIndex), laserList(laserList)
 {
-	collisionBox.Y.size = 0.15f;
+	collisionBox.Y.size = 0.08f;
 	collisionBox.X.size = 0.2f;
 	vertexArray = new VertexArray();
 	vertexBuffer = new VertexBuffer(VertexData, sizeof(VertexData));
